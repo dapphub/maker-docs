@@ -1,0 +1,10 @@
+<!doctype html><script src=wiki.js></script>
+
+The term "print-and-sell" refers to the way DebtAuctions (which are
+used to liquidate RiskyCdps) are funded by printing new MkrTokens.
+
+Upon CdpLiquidation, a DebtAuction is used to print just the right
+amount of MKR tokens necessary to fully cover the EmergencyDebt.
+
+This happens concurrently to the CollateralAuction, which is used to
+raise a corresponding amount of DaiStablecoins used for BuyAndBurn.

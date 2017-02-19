@@ -1,0 +1,32 @@
+<!doctype html><script src=wiki.js></script>
+
+Continuous and automatic adjustments of the DeflationRate are done in
+order to cause the DaiMarketPrice to stabilize around the TargetPrice.
+
+After some time dt, the new deflation rate DR' is calculated as
+
+                DR' = DR + sgn(TP - MP) * SP * dt,
+
+where DR is the previous deflation rate, TP is the target price of
+dai, MP is the market price of dai and SP is the SensitivityParameter.
+
+Hence, when the market price is below the target price, the deflation
+rate increases.  This makes it more expensive for DaiBorrowers to
+issue new dai (which tends to cause a reduction in the supply of dai).
+At the same time, an increased deflation rate also causes CapitalGains
+earned by DaiHolders to go up (which tends to cause an increase in the
+demand for dai).  This combination of a reduced supply and an
+increased demand tends to cause the value of the dai to appreciate,
+pushing the market price up towards the target price.
+
+The same mechanism works in reverse if the market price is higher than
+the target price: a decreased deflation rate leads to an increased
+demand for borrowing and a decreased demand for holding, causing the
+dai to depreciate in value, pushing it down towards the target price.
+
+In other words, deflation rate adjustment is a negative FeedbackLoop:
+deviation away from the target price in one direction automatically
+causes an increase in the force applied in the opposite direction.
+
+The magnitude of the change in deflation rate over time depends on how
+long the market price remains on the same side of the target price.

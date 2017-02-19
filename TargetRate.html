@@ -1,0 +1,17 @@
+<!doctype html><script src=wiki.js></script>
+
+The "deflation rate" of the DaiStablecoin is defined as an annual rate
+of change in the TargetPrice.
+
+The new target price TP' after some time dt is calculated as
+
+                                        sgn(DR) dt
+                   TP' = TP * (1 + |DR|),
+
+where TP is the previous target price and DR is the deflation rate.
+
+The change in target price happens continuously and automatically.
+In addition, the deflation rate itself is also continuously and
+automatically altered in a process known as DeflationAdjustment.
+
+See also PriceDeflation.

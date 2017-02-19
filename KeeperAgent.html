@@ -1,0 +1,27 @@
+<!doctype html><script src=wiki.js></script>
+
+Agents that systematically earn an income from MakerDao by exploiting
+simple profit opportunities are called "keepers."  In a general sense,
+a keeper is an economic agent (usually automated) that contributes to
+DecentralizedAutonomousOrganizations in exchange for built-in rewards.
+
+In the context of Maker, keepers perform several important functions:
+
+ * Participating in ContinuousSplittingAuctions
+
+   Keepers are constantly scanning the blockchain for RiskyCdps that
+   can have a CdpLiquidation triggered.  Keepers bid on auctions with
+   the goal of getting a price that is better than the market rate so
+   that they can instantly sell the earned asset for profit.
+
+ * Market making the dai around the TargetPrice
+
+   Each keeper will want to try to sell dai when the DaiMarketPrice is
+   higher than the target price.  Similarly, keepers buy dai when the
+   price is below the target in order to profit from the known
+   long-term convergence towards the target price and make money from
+   the spread.
+
+ * Providing price feeds
+
+   A keeper can also act as an oracle by providing a PriceFeed.

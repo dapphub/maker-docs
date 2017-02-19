@@ -1,0 +1,866 @@
+======================================================================
+AdjustmentRate
+======================================================================
+The "rate of DeflationAdjustment," sometimes known as the "sensitivity
+parameter," is the only global RiskParameter of the DaiCreditSystem.
+
+The adjustment rate is defined as the number of percentage points per
+day by which to adjust the DeflationRate (in the direction determined
+by the relationship between the TargetPrice and the DaiMarketPrice).
+
+For example, if the adjustment rate is 0.2 pp/day, and the market
+price of dai is too low, then if the system were poked after 12 hours,
+the dai deflation rate would be increased by 0.1 percentage points.
+
+======================================================================
+BailOut
+======================================================================
+A CdpLiquidation is not guaranteed to be profitable, even if triggered
+when the CollateralRatio is just below the LiquidationRatio.
+
+For example, a market crash, or simply market slippage, could cause
+the CollateralAuction to raise less MkrTokens for BuyAndBurn than the
+amount that had to be created by PrintAndSell in the DebtAuction.
+
+In this case, MakerDao sustains a net loss, which means that there is
+a corresponding net increase in the outstanding supply of MKR.
+
+Maker uses multiple RiskParameters to ensure that the system remains
+stable despite the possibility of unprofitable liquidations.
+
+======================================================================
+BitCoin
+======================================================================
+Bitcoin is the first and the original CryptoCurrency.  It can also be
+considered to be the first DecentralizedAutonomousOrganization (DAO).
+It is also more or less synonymous with the idea of a "BlockChain."
+
+Since it lacks PriceStability, it is not a StableCoin.  However, it is
+a very effective MediumOfExchange and ostensibly a good StoreOfValue.
+
+Economists have argued that the PriceBubbles in bitcoin "conclusively
+disprove the EfficientMarketHypothesis," since there appears to be no
+FundamentalReason for the bitcoin price to be anything in particular.
+
+======================================================================
+BitShares
+======================================================================
+BitShares is a BlockChain with StableCoin and DecentralizedExchange
+functionality built into the core protocol.
+
+Its stablecoins such as BitUsd and BitCny are arguably the first and
+most successful stablecoins to date.
+
+It also stands out as a very high-throughput blockchain.
+
+======================================================================
+BlockChain
+======================================================================
+A "blockchain" is an AppendOnly ledger implemented using PeerToPeer
+technology that maintains LongTerm integrity using CryptoEconomics.
+
+Blockchains can be considered DecentralizedAutonomousOrganizations and
+generally come in two flavors (either ProofOfWork or ProofOfStake).
+
+Examples: BitCoin, BitShares, EthereumBlockchain
+
+======================================================================
+BuyAndBurn
+======================================================================
+The term "buy-and-burn" refers to the way MakerDao uses its income
+from StabilityFees to buy up MkrTokens in order to destroy them.
+
+Destroying MKR tokens is a way of transferring value to MKR owners.
+
+The inverse of buy-and-burn is known as "PrintAndSell."
+
+======================================================================
+CapitalInvestmentFirm
+======================================================================
+Capital investment firms (CIFs) are LegalEntities that specialize in
+repackaging legal securities into a format that can be used as
+CollateralAssets for borrowing dai, thus enabling the DaiStablecoin to
+be backed by off-chain collateral.
+
+This is achieved through a smart contract called the CifTrap, which
+enables Maker to give the CIF a DebtCeiling based on its internal
+holdings of legal securities.
+
+CIFs increase the ability of MakerDao to respond to dai DemandShocks
+by borrowing dai and trading it for other assets.
+
+======================================================================
+CdpCollateral
+======================================================================
+The "collateral" data field of a CollateralizedDebtPosition records
+the number of CollateralToken units currently locked in that CDP.
+
+The collateral itself is held in a TokenVault controlled by MakerDao.
+
+======================================================================
+CdpDebt
+======================================================================
+The "debt" associated with a CollateralizedDebtPosition records the
+amount of dai (principal plus CdpFees) owed by the CdpOwner.
+
+To recover the CdpCollateral, the CDP owner must first repay the debt.
+
+======================================================================
+CdpFee
+======================================================================
+When a CollateralizedDebtPosition that was last poked at time t_[n-1]
+is poked at time t_n, the new total CdpDebt is given by
+
+                                   RD(t_n)
+             D(t_n) = D(t_[n-1]) -----------,
+                                 RD(t_[n-1])
+
+where RD(t_n) and RD(t_[n-1]) are the corresponding ReferenceDebts.
+This applies all the compound StabilityFees in a single calculation.
+
+The fee F(t_n) = D(t_n) - D(t_[n-1]) is paid by the CdpOwner, and the
+same amount of DaiStablecoin are also created and sent to BuyAndBurn.
+
+
+======================================================================
+CdpLiquidation
+======================================================================
+To directly enforce the TargetPrice in the marketplace, MakerDao will
+liquidate a CollateralizedDebtPosition that hits its LiquidationRatio.
+
+When a CDP is liquidated, Maker takes over the CdpCollateral and sells
+it off in a CollateralAuction.  Simultaneously, the CdpDebt is taken
+on by the system (as EmergencyDebt) and extinguished in a DebtAuction.
+
+In order for Maker to take over the collateral so it can be sold off,
+emergency debt is instantly used to create dai which is backed by the
+ability of Maker to dilute the MkrToken supply (see PrintAndSell).
+A ReverseAuction is used to find the lowest amount of MKR that needs
+to be printed to raise enough dai to cancel out the emergency debt.
+This type of auction is called a debt auction.
+
+Simultaneously to the debt auction, the collateral is sold off
+for dai in a collateral auction.  The proceeds of this auction are
+sent directly to the BuyAndBurn contract, up to the value of the
+emergency debt plus the LiquidationPenalty.  If enough dai is raised
+to cover both the debt and the liquidation penalty, then the auction
+switches into reverse to sell as little of the collateral as possible.
+Any LeftoverCollateral which is freed up in this second phase of the
+auction is returned directly to the CdpOwner.
+
+Example 4:
+
+  Assume ETH has a liquidation ratio of 145% and a penalty of 105%,
+  and that an ETH-CDP is outstanding at 150% collateral ratio.
+  Assume further that the price of ETH crashes 10% against the SDR,
+  causing the collateral ratio of the CDP to fall to about 135%.
+  As it falls below the liquidation point, traders can trigger its
+  liquidation and begin bidding with dai to buy MKR in the debt
+  auction.  Traders can also begin bidding with dai to buy the about
+  135 dai worth of collateral in the collateral auction.  Once there
+  is at least 105 dai is being bid, traders bid in reverse to take the
+  least amount of collateral for 105 dai.  The remainder is returned
+  to the CDP owner.
+
+======================================================================
+CdpOwner
+======================================================================
+Every CollateralizedDebtPosition has an "owner."  While CDPs are not
+fungible with each other, they can still be traded (see CdpTransfer).
+
+The CDP owner is entitled to redeem the CdpCollateral after covering
+all outstanding CdpDebt (including any incurred StabilityFees).
+
+In case of a profitable CdpLiquidation, the LeftoverCollateral from
+the CollateralAuction is automatically sent back to the CDP owner.
+
+The original owner of a CDP is the DaiBorrower.
+
+======================================================================
+CdpType
+======================================================================
+The "type" of a CollateralizedDebtPosition determines the majority of
+its properties, including its CollateralToken and its RiskParameters.
+
+When multiple CDP types need to share a single StabilityFee policy,
+one CDP type can act as a FeeGroup for the remaining ones.
+
+======================================================================
+CollateralizedDebtPosition
+======================================================================
+A collateralized debt position (CDP) is a DaiCreditSystem record of
+the CdpCollateral posted by the CdpOwner as well as the CdpDebt owed.
+
+Every CDP has a CdpId and belongs to a CdpType.
+
+Borrowing dai is done by "locking" some CollateralTokens in a CDP and
+then "issuing" an amount of dai.  This sends the newly issued dai to
+the DaiBorrower and records a corresponding amount of debt in the CDP.
+
+Over time, the CDP accrues a StabilityFee added on top of the debt.
+The borrower can "free" the posted collateral by "covering" the debt
+plus the stability fee.  All stability fees go towards BuyAndBurn.
+
+Example 1: Borrowing dai
+  Alice wants to borrow 100 dai.  She locks an amount of ETH worth
+  significantly more than 100 dai into a CDP and then issues 100 dai,
+  which are instantly sent to her Ethereum account.  If the stability
+  fee for this CDP type is 0.75% per year, then one year later Alice
+  would need 100.75 dai to cover the debt and retrieve her ETH.
+
+  Background:
+    Given ETH1 is a type of CDP backed by ETH
+      and the stability fee of ETH1 is 0.75%
+      and the price of ETH is 5.34 SDR
+      and the target price of dai is 0.73 SDR
+      and the liquidation ratio of ETH1 is 150%
+      and I am a person called Alice
+      and I open a CDP of type ETH1
+
+  Scenario:
+    Given I have 1,000 ETH and 500 DAI
+     When I lock 25 ETH and issue 100 DAI
+     Then I should have 975 ETH and 600 DAI
+     When I wait 1 year and close the CDP
+     Then I should have 1,000 ETH and 499.25 DAI
+
+  Scenario: Attempting to lock nonexistent collateral
+    Given I have 24 ETH
+     Then I should not be able to lock 25 ETH
+  Scenario: Attempting to borrow against too little collateral
+    Given I have 1,000 ETH
+     When I lock 20 ETH
+     Then I should not be able to issue 100 DAI
+
+The (normally) deflationary nature of the dai means that the market
+value of the debt measured in SDR also tends to increase over time;
+this adds an additional cost to borrowing, beyond the stability fee.
+
+The DaiDeflation transfers value from DaiBorrowers to DaiHolders,
+while the stability fee transfers value from borrowers to MkrOwners.
+
+One of the primary use cases of CDPs is MarginTrading by borrowers.
+
+Example 2: Margin trading
+  Bob wishes to go margin long ETH/DAI.  He locks 150 SDR worth of ETH
+  and issues 100 SDR worth of dai.  He then buys another 100 SDR worth
+  of ETH with the dai he just borrowed.  This puts him at a net 1.66x
+  exposure to ETH/SDR.  Of course, he is free to do whatever he wants
+  with the ETH he obtained by selling his dai, but the collateral (the
+  150 SDR worth of ETH that he locked in the CDP) remains unavailable
+  to him until he covers the debt plus stability fees.
+
+Although CDPs are not fungible with each other, the ownership of a CDP
+is transferable.  This allows CDPs to be used in smart contracts that
+perform more complex methods of borrowing (for example, involving more
+than one actor).
+
+Example 3: Multi-party margin trading
+  Alice and Bob collaborate using an Ethereum contract to issue 100
+  SDR worth of dai backed by ETH.  Alice contributes 50 SDR worth of
+  ETH, while Bob contributes 100 SDR worth.  The OTC contract takes
+  the funds, creates a CDP and then issues 100 SDR worth of dai.
+  The newly borrowed dai are automatically sent to Bob.  (From Bob's
+  point of view, he is buying 100 SDR worth of dai by paying the
+  equivalent value in ETH.)  The contract then transfers ownership of
+  the CDP to Alice.  She now has 100 SDR worth of (dai-denominated)
+  debt and 150 SDR worth of (ETH-denominated) collateral.  Since she
+  started with only 50 SDR worth of ETH, she is now 3x long ETH/SDR.
+
+======================================================================
+CollateralToken
+======================================================================
+The "collateral token" of a CdpType is an EthereumToken used to
+represent the CdpCollateral for CDPs of that type.
+
+After a CDP type is created, the collateral token cannot be changed.
+
+Multiple CDP types may use the same collateral token.
+
+======================================================================
+ContinuousSplittingAuction
+======================================================================
+A continuous splitting auction (CSA) is an auction mechanism which is
+specialized for automatic price discovery.
+
+It is used for both CollateralAuctions and DebtAuctions.
+
+See RiskyCdp.
+
+======================================================================
+CryptoCurrency
+======================================================================
+A "cryptocurrency" is a DigitalAsset usable as a MediumOfExchange.
+Most BlockChains are home to one or more cryptocurrencies.
+
+A cryptocurrency that functions as a UnitOfAccount is a StableCoin.
+
+Some cryptocurrencies (such as BitCoin) can also be a StoreOfValue.
+
+======================================================================
+DaiBorrower
+======================================================================
+A dai "borrower" is anyone who uses a CollateralizedDebtPosition to
+issue DaiStablecoins and thus borrow money from the DaiCreditSystem.
+
+The dai borrower is the initial CdpOwner.
+
+A CapitalInvestmentFirm is a special example of a dai borrower.
+
+======================================================================
+DaiCreditSystem
+======================================================================
+The Dai Credit System is the SmartContract system used by MakerDao to
+generate the PriceStability and PriceDeflation of the DaiStablecoin by
+automatic modification of market incentives (via DeflationAdjustment),
+and to provide trustless credit services to EthereumBlockchain users.
+
+New dai enter the money supply when a DaiBorrower posts an excess of
+collateral to a CollateralizedDebtPosition (CDP) and takes out a loan.
+The debt and collateral amounts are recorded in the CDP, and (as time
+passes) the StabilityFees incurred by the CdpOwner are also recorded.
+The collateral itself is held in a TokenVault controlled by MakerDAO.
+
+Any Ethereum account can borrow dai without any requirements beyond
+posting and maintaining adequate collateral.  There are no term limits
+on dai loans and borrowers are free to open or close CDPs at any time.
+The collateral held in CDPs collectively backs the value of the dai in
+a fully transparent manner that anyone can verify.
+
+======================================================================
+DaiMarketPrice
+======================================================================
+The "market price" of the DaiStablecoin is fed to the DaiCreditSystem
+by a set of trusted PriceOracles maintained by SystemGovernance.
+
+The market price of dai is an input parameter to DeflationAdjustment,
+but no other components of the credit system refer directly to the
+market price of dai.  (The TargetPrice is always used instead.)
+
+The market price of dai is denominated in SDR (the StabilityAnchor).
+
+======================================================================
+DaiStablecoin
+======================================================================
+The "dai" is a StableCoin autonomously managed by the DaiCreditSystem.
+
+It is designed to maintain PriceStability in the ShortTerm (making it
+useful as a UnitOfAccount and a MediumOfExchange), and to tend towards
+PriceDeflation in the LongTerm (making it a potential StoreOfValue).
+
+The StabilityAnchor of the dai is the SpecialDrawingRight (SDR).
+
+======================================================================
+DebtCeiling
+======================================================================
+The "debt ceiling" of a CdpType is the maximum amount of dai that can
+be borrowed against this type of CollateralizedDebtPosition.
+
+If the debt ceiling is reached, no more DaiStablecoins can be borrowed
+against CDPs of this type until some of the existing debt is covered.
+
+The debt ceiling is a RiskParameter.
+
+======================================================================
+DecentralizedAutonomousOrganization
+======================================================================
+A decentralized autonomous organization (DAO) is a BlockChain-based
+organization whose BusinessLogic is carried out by SmartContracts.
+
+The first example of a DAO is arguably BitCoin.
+
+The EthereumBlockchain was designed to make it easy for developers to
+construct new DAOs without having to implement whole new blockchains.
+
+======================================================================
+DeflationAdjustment
+======================================================================
+Continuous and automatic adjustments of the DeflationRate are done in
+order to cause the DaiMarketPrice to stabilize around the TargetPrice.
+
+After some time dt, the new deflation rate DR' is calculated as
+
+                  DR' = DR + sgn(TP - MP) * AR * dt,
+
+where DR is the previous deflation rate, TP is the target price of
+dai, MP is the market price of dai and AR is the AdjustmentRate.
+
+Hence, when the market price is below the target price, the deflation
+rate increases.  This makes it more expensive for DaiBorrowers to
+issue new dai (which tends to cause a reduction in the supply of dai).
+At the same time, an increased deflation rate also causes CapitalGains
+earned by DaiHolders to go up (which tends to cause an increase in the
+demand for dai).  This combination of a reduced supply and an
+increased demand tends to cause the value of the dai to appreciate,
+pushing the market price up towards the target price.
+
+The same mechanism works in reverse if the market price is higher than
+the target price: a decreased deflation rate leads to an increased
+demand for borrowing and a decreased demand for holding, causing the
+dai to depreciate in value, pushing it down towards the target price.
+
+In other words, deflation rate adjustment is a negative FeedbackLoop:
+deviation away from the target price in one direction automatically
+causes an increase in the force applied in the opposite direction.
+
+The magnitude of the change in deflation rate over time depends on how
+long the market price remains on the same side of the target price.
+
+======================================================================
+DeflationRate
+======================================================================
+The "deflation rate" of the DaiStablecoin is defined as an annual rate
+of change in the TargetPrice.
+
+The new target price TP' after some time dt is calculated as
+
+                                           sgn(DR)
+                           ⎡           dt ⎤
+                TP' = TP * ⎣ (1 + |DR|)   ⎦
+
+where TP is the previous target price and DR is the deflation rate.
+
+The change in target price happens continuously and automatically.
+In addition, the deflation rate itself is also continuously and
+automatically altered in a process known as DeflationAdjustment.
+
+See also PriceDeflation.
+
+======================================================================
+DevelopmentFund
+======================================================================
+The development fund is a SmartContract separate from the core system
+that holds money on behalf of MakerDao.
+
+The fund is temporarily controlled by a group of MkrToken owners who
+actively participate in SystemGovernance (known as the AlphaDynasty).
+
+The MKR in the fund was initially set aside by the founder of Maker to
+facilitate development of the DaiCreditSystem.  The fund may also hold
+other EthereumTokens (usually raised by selling MKR from the fund).
+
+As of January 1, 2017, the address of the MultiSig controlling the
+development fund is 0x7bb0b08587b8a6b8945e09f1baca426558b0f06a.
+
+======================================================================
+EthereumBlockchain
+======================================================================
+Ethereum is a BlockChain with TuringComplete scripting that makes it
+relatively cheap to develop new DecentralizedAutonomousOrganizations.
+
+While Ethereum is a pure ProofOfWork blockchain, the DifficultyBomb
+was put in place to force the developers to migrate to ProofOfStake.
+
+The Ethereum network charges GasCosts denominated in NativeEth (ETH)
+to whoever wants to have an EthereumTransaction included in a block.
+
+Examples of DAOs that run on Ethereum include MakerDao and DigixDao.
+
+======================================================================
+EthereumToken
+======================================================================
+A "token" on the EthereumBlockchain is a SmartContract that records
+balances and allows transfers between accounts.
+
+If an Ethereum token does not conform to the ERC20 standard, it may be
+necessary to create a WrappedToken.  For example, WrappedEth (WETH)
+exists only because NativeEth (ETH) itself is not an ERC20 token.
+
+A token functions as a "sub-CryptoCurrency" on top of Ethereum.
+
+Examples: DaiStablecoin, MkrToken
+
+======================================================================
+index
+======================================================================
+This wiki is all about StableCoin technologies (primarily MakerDao).
+
+It functions as the reference documentation for the DaiCreditSystem.
+
+======================================================================
+KeeperAgent
+======================================================================
+Agents that systematically earn an income from MakerDao by exploiting
+simple profit opportunities are called "keepers."  In a general sense,
+a keeper is an economic agent (usually automated) that contributes to
+DecentralizedAutonomousOrganizations in exchange for built-in rewards.
+
+In the context of Maker, keepers perform several important functions:
+
+ * Participating in ContinuousSplittingAuctions
+
+   Keepers are constantly scanning the blockchain for RiskyCdps that
+   can have a CdpLiquidation triggered.  Keepers bid on auctions with
+   the goal of getting a price that is better than the market rate so
+   that they can instantly sell the earned asset for profit.
+
+ * Market making the dai around the TargetPrice
+
+   Each keeper will want to try to sell dai when the DaiMarketPrice is
+   higher than the target price.  Similarly, keepers buy dai when the
+   price is below the target in order to profit from the known
+   long-term convergence towards the target price and make money from
+   the spread.
+
+ * Providing price feeds
+
+   A keeper can also act as an oracle by providing a PriceFeed.
+
+======================================================================
+LiquidationPenalty
+======================================================================
+When a CdpLiquidation is performed, a "liquidation penalty" is added
+on top of the CdpDebt.  This is the maximum amount of DaiStablecoins
+raised from the DebtAuction that goes to BuyAndBurn.
+
+The liquidation penalty is a RiskParameter that varies by CdpType.
+
+======================================================================
+LiquidationRatio
+======================================================================
+The liquidation ratio (or liquidation point) of a CdpType is the
+CollateralRatio at which automatic CdpLiquidation can be triggered.
+
+CollateralizedDebtPositions whose collateral ratio have fallen below
+the liquidation point are known as RiskyCdps.
+
+======================================================================
+LongTerm
+======================================================================
+A "long term" timeframe usually refers to years or decades.
+
+See StoreOfValue, MediumTerm.
+
+======================================================================
+MakerDao
+======================================================================
+MakerDAO (or "Maker") is a DecentralizedAutonomousOrganization that
+backs the value of the DaiStablecoin (DAI) on the EthereumBlockchain
+through deployment and continued maintenance of the DaiCreditSystem.
+
+In return for for performing SystemGovernance and for taking on the
+risk of BailOuts, Maker earns a StabilityFee on all outstanding dai.
+This income is funnelled directly to owners of the MkrToken (MKR).
+
+======================================================================
+MediumOfExchange
+======================================================================
+A "medium of exchange" is anything that can be used as if it were an
+equivalent of money when buying or selling goods or services.
+
+By definition, a CryptoCurrency can function as a medium of exchange.
+
+See also StoreOfValue, UnitOfAccount.
+
+======================================================================
+MediumTerm
+======================================================================
+A "medium term" timeframe usually refers to months or years.
+
+See StoreOfValue, StableCoin, ShortTerm, LongTerm.
+
+======================================================================
+MkrToken
+======================================================================
+The EthereumToken which acts as "shares" in MakerDao is called "MKR."
+In theory, the MKR price can be expected to correlate with the overall
+performance of the DaiCreditSystem.
+
+The initial supply is 1,000,000 MKR.  As of January 1, 2017, a total
+of 494,078 MKR are in the hands of founders, investors, developers,
+and other people involved with the project.  The other 505,922 MKR
+remain in a MultiSig account called the DevelopmentFund.
+
+In return for taking on the risk of BailOuts, owners of the MKR token
+earn a StabilityFee on all outstanding DaiStablecoin.  The income from
+stability fees is funnelled directly to MKR owners through BuyAndBurn.
+
+However, MKR owners are taking a big risk, since Maker is commited to
+acting as a "market maker of last resort" by backing the liquidation
+of RiskyCdps through its ability to PrintAndSell MKR tokens.
+
+Only "buy-and-burn" and "print-and-sell" can alter the MkrSupply.
+
+======================================================================
+PortfolioImbalance
+======================================================================
+One of the major SystemicRisks of the DaiCreditSystem is the
+possibility of dangerous imbalances in its CollateralPorfolio.
+
+Important instruments of SystemGovernance available to prevent
+porfolio imbalances are DebtCeilings and StabilityFees.
+
+======================================================================
+PreciousMetal
+======================================================================
+A "precious metal" is a valuable metal such as gold or silver that
+functions as a StoreOfValue, and sometimes as a MediumOfExchange.
+
+The economics of BitCoin was largely modelled on precious metals.
+
+DigixDao issues EthereumTokens representing LegalClaims to gold.
+
+======================================================================
+PriceFeed
+======================================================================
+Other than KeeperAgents, another crucial group of ExternalAgents that
+MakerDao requires to function are price feed oracles.
+
+Oracles are mechanisms that provide information from the outside world
+onto the BlockChain for SmartContracts to consume.
+
+Maker needs information about the DaiMarketPrice (specifically, its
+deviation from the TargetPrice) to perform DeflationAdjustment.
+
+It also needs information about the market prices of the various
+CollateralTokens, to know when a CdpLiquidation can be triggered.
+
+======================================================================
+PriceStability
+======================================================================
+An asset has "price stability" if it has low ShortTerm and MediumTerm
+volatility against some relevant CurrencyBasket or BasketOfGoods.
+
+Achieving price stability is the goal of a StableCoin.
+
+The SpecialDrawingRight (SDR) currency basket (a proxy to the major
+world currencies) is the StabilityAnchor for the DaiStablecoin.
+
+======================================================================
+PrintAndSell
+======================================================================
+The term "print-and-sell" refers to the way DebtAuctions (which are
+used to liquidate RiskyCdps) are funded by printing new MkrTokens.
+
+Upon CdpLiquidation, a DebtAuction is used to print just the right
+amount of MKR tokens necessary to fully cover the EmergencyDebt.
+
+This happens concurrently to the CollateralAuction, which is used to
+raise a corresponding amount of DaiStablecoins used for BuyAndBurn.
+
+======================================================================
+ReferenceDebt
+======================================================================
+The "reference debt" or "fee accumulator" of a CdpType is an imaginary
+loan of 1 dai, taken out at CDP type creation and left to "accumulate"
+the compound StabilityFees applied over the lifetime of the CDP type
+(taking into account that the fee can be changed by SystemGovernance).
+
+The reference debt RD(t_n) is computed from its previous value by
+
+                                                  dt
+         RD(t_n) = RD(t_[n-1]) * [1 + SF(t_[n-1])],
+
+where SF is the stability fee and dt is the elapsed TimeInYears.
+(This computation is nontrivial due to FixedPointExponentiation.)
+
+Previous values may be needed later to determine CdpFees, so each
+computed value of the reference debt is recorded in EthereumStorage.
+
+To maintain the correct value, the reference debt also needs to be
+recomputed whenever the stability fee of the CDP type is changed.
+
+======================================================================
+RiskParameter
+======================================================================
+Risk parameters are SystemGovernance instruments used to minimize the
+need for BailOuts, and in general to ensure that the DaiCreditSystem
+remains stable despite the possibility of a variety of contingencies.
+
+Each CdpType has five risk parameters:
+
+ * The DebtCeiling, used to limit risk due to PortfolioImbalance.
+ * The LiquidationRatio, used to limit risk due to PriceVolatility.
+ * The LiquidationPenalty, used to offset the costs of CdpLiquidation.
+ * The LimboDuration, used to manage risk due to PriceFeed failures.
+ * The StabilityFee, rewarding MkrToken holders for assuming the risk.
+
+There is also a global risk parameter, known as the AdjustmentRate.
+
+======================================================================
+RiskyCdp
+======================================================================
+A "risky" CDP is a CollateralizedDebtPosition whose CollateralRatio is
+below the LiquidationRatio of its CdpType.
+
+A DaiKeeper may trigger the CdpLiquidation of a risky CDP at any time.
+
+======================================================================
+ShortTerm
+======================================================================
+A "short term" timeframe usually refers to weeks or months.
+
+See PriceStability, StableCoin, MediumTerm.
+
+======================================================================
+SpecialDrawingRight
+======================================================================
+The "Special Drawing Right" (SDR) is a CurrencyBasket defined by the
+InternationalMonetaryFund consisting of the US dollar, the euro, the
+British pound, the Japanese yen and (as of 2016) the Chinese yuan.
+
+The SDR functions as the StabilityAnchor of the DaiStablecoin.
+
+======================================================================
+StabilityAnchor
+======================================================================
+The "stability anchor" of the DaiStablecoin is a UnitOfAccount used
+internally by the DaiCreditSystem to measure all other AssetPrices.
+
+The stability anchor is defined to be the SpecialDrawingRight (SDR),
+chosen in order to achieve PriceStability against world currencies.
+
+Prices quoted in terms of the SDR anchor include the TargetPrice of
+dai, the DaiMarketPrice, and the market prices of CollateralTokens.
+
+======================================================================
+StabilityFee
+======================================================================
+Every CdpOwner pays a "stability fee" to MakerDao.  The stability fee
+is defined per CdpType as a yearly percentage accrued continuously on
+top of the existing debt of each CollateralizedDebtPosition.
+
+The stability fee is a RiskParameter.
+
+Upon poking a CDP, its CdpFee is calculated and added to the CdpDebt.
+
+======================================================================
+StableCoin
+======================================================================
+A "stablecoin" is a CryptoCurrency with PriceStability properties that
+make it suitable for ShortTerm and MediumTerm use as a UnitOfAccount.
+
+Ideally, a stablecoin should also be a StoreOfValue in the LongTerm.
+
+Examples: DaiStablecoin, BitAssets
+
+======================================================================
+StoreOfValue
+======================================================================
+An asset is said to be a "store of value" when it can be expected to
+maintain its value over the MediumTerm and especially the LongTerm.
+
+Paradigmatic examples of stores of value include PreciousMetals (on
+which BitCoin was modelled), RealEstate, and GovernmentBonds.
+
+In theory, the PriceDeflation properties of the DaiStablecoin should
+make it a good candidate for preserving value in the long term.
+
+See also MediumOfExchange, UnitOfAccount.
+
+======================================================================
+SystemGovernance
+======================================================================
+Direct governance means controlling MakerDao directly through voting
+with an Ethereum account that holds MkrTokens.  An account gets a vote
+for each MKR token held.  MKR owners who actively vote and participate
+in governance are called governors.  A simple majority vote has full
+authority of the system to change the voting rules, alter the business
+logic, spend money from the DevelopmentFund, and LockDown Maker's
+smart contracts as the system matures.
+
+There are four major phases when governors exercise direct governance
+over Maker through the voting process.
+
+* The first phase is deploying and publishing the ActionProposal, a
+  smart contract that will change the status quo of Maker if it gets
+  executed by directly modifying the state of its smart contracts.
+
+* The second phase is initiating the action proposal for public vote
+  by the governors.  This enables governors to vote on the action
+  proposal with their MKR and starts the proposal's expiration timer.
+
+* The third phase is the voting process.  Voting is done according to
+  the voting rules of the system (themselves modifiable, until they
+  are locked down by the governance process).  Each action proposal
+  has an expiration time after which it is automatically abandoned.
+
+* The fourth phase is triggering the action.  This is the transaction
+  that actually modifies the state of Maker's smart contract system.
+
+Example:
+
+* Informal governance proposal: A new proposal will first be brought
+  up and discussed on chat and the forum - in this setting of public
+  and freeflowing information a proposal will be rapidly scrutinized
+  and any obvious objections will be raised immediately by the
+  community.  The proposal can then be amended based on input and
+  objections or abandoned.
+
+* Formal governance proposal: Once a proposal has been amended to a
+  form that doesn't have any obvious objections, it can move on to
+  formal governance.  Formal governance ensures that every governor is
+  present to weigh the proposal as it is presented in formal parlance
+  that emphasizes the use of simple English with live translation to
+  other major languages.  If there is input and objections to the
+  proposal, they have to be properly articulated, and if necessary the
+  proposal can be delayed until the next GovernanceMeeting to allow
+  another week of informal governance.  When a proposal no longer has
+  any formal objections or input, an action proposal has to be created
+  and published for scrutiny so that governors can ensure that it
+  properly implements the spirit of the proposal.
+
+* Direct governance vote: When the action proposal is considered ready
+  for vote, it is initiated by the proposer and governors can begin
+  the process of voting for or against it.  As mentioned above, the
+  initiation has to be done during the governance meeting or it is
+  considered either an attack or a governance crisis.  The process of
+  voting extends beyond the governance meeting where it was proposed,
+  allowing plenty of time for every governor to vote even if they
+  weren't present.
+
+======================================================================
+TargetPrice
+======================================================================
+The "target price" of the DaiStablecoin is used by the DaiCreditSystem
+to determine the CollateralRatio of a CollateralizedDebtPosition.
+
+The target price of dai is denominated in SDR (the StabilityAnchor)
+and is always changing continuously according to the DeflationRate.
+
+The initial target price will arbitrarily be set to $1 USD equivalent.
+
+Immediately after launch, the target price will slowly start drifting
+away from its initial value, maintaining low volatility against the
+major world currencies in the ShortTerm (via the anchor to the SDR),
+while tending towards slow but steady PriceDeflation in the LongTerm.
+
+See also DaiMarketPrice.
+
+======================================================================
+UnitOfAccount
+======================================================================
+A "unit of account" is an asset whose PriceStability is such that it
+can be used to measure and compare other prices over time.
+
+A FiatCurrency is typically the unit of account for most economic
+activity occuring within its corresponding jurisdiction.
+
+While a CryptoCurrency typically makes for a poor unit of account (due
+to lack of price stability), StableCoins exist to solve this problem.
+
+See also MediumOfExchange, StoreOfValue.
+
+======================================================================
+VoterOrganization
+======================================================================
+An important part of SystemGovernance is voter organization.  To make
+it as straightforward as possible for governors to coordinate their
+votes and discuss ActionProposals, a weekly formal GovernanceMeeting
+is held as a conference call using the TeamSpeak platform, currently
+(as of September 2016) defined to happen every Sunday at 15:00 GMT.
+
+While the contract system allows initiating proposals for vote at any
+time, during normal conditions it is in practice only done at the
+governance meeting.  If a proposal is initiated for vote outside the
+social framework of the governance meeting, it indicates either an
+attack on the system, or a breakdown of the governance framework and a
+potential governance crisis.
+
+All governance-related discussion and debate that doesn't take place
+in the framework of the governance meeting is referred to as "informal
+governance."  The Maker RocketChat server and the MakerForum act as
+the primary communications platforms for MkrToken owners to discuss
+and debate all aspects of the DAO and its governance, and for
+governors to schedule governance meetings.
+

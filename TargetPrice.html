@@ -1,0 +1,16 @@
+<!doctype html><script src=wiki.js></script>
+
+The "target price" of the DaiStablecoin is used by the DaiCreditSystem
+to determine the CollateralRatio of a CollateralizedDebtPosition.
+
+The target price of dai is denominated in SDR (the StabilityAnchor)
+and is always changing continuously according to the DeflationRate.
+
+The initial target price will arbitrarily be set to $1 USD equivalent.
+
+Immediately after launch, the target price will slowly start drifting
+away from its initial value, maintaining low volatility against the
+major world currencies in the ShortTerm (via the anchor to the SDR),
+while tending towards slow but steady PriceDeflation in the LongTerm.
+
+See also DaiMarketPrice.

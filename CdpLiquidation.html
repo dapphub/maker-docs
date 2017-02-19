@@ -1,0 +1,39 @@
+<!doctype html><script src=wiki.js></script>
+
+A CollateralizedDebtPosition whose CollateralRatio drops below its
+LiquidationRatio is called "risky", and its liquidation can be triggered
+by a KeeperAgent.
+
+When a CDP is liquidated, Maker takes over the CdpCollateral and sells
+it off in a CollateralAuction.  Simultaneously, the CdpDebt is taken
+on by the system (as EmergencyDebt) and extinguished in a DebtAuction.
+
+In order for Maker to take over the collateral so it can be sold off,
+emergency debt is instantly used to create dai which is backed by the
+ability of Maker to dilute the MkrToken supply (see PrintAndSell).
+A ReverseAuction is used to find the lowest amount of MKR that needs
+to be printed to raise enough dai to cancel out the emergency debt.
+This type of auction is called a debt auction.
+
+Simultaneously to the debt auction, the collateral is sold off
+for dai in a collateral auction.  The proceeds of this auction are
+sent directly to the BuyAndBurn contract, up to the value of the
+emergency debt plus the LiquidationPenalty.  If enough dai is raised
+to cover both the debt and the liquidation penalty, then the auction
+switches into reverse to sell as little of the collateral as possible.
+Any LeftoverCollateral which is freed up in this second phase of the
+auction is returned directly to the CdpOwner.
+
+Example 4:
+
+  Assume ETH has a liquidation ratio of 145% and a penalty of 105%,
+  and that an ETH-CDP is outstanding at 150% collateral ratio.
+  Assume further that the price of ETH crashes 10% against the SDR,
+  causing the collateral ratio of the CDP to fall to about 135%.
+  As it falls below the liquidation point, traders can trigger its
+  liquidation and begin bidding with dai to buy MKR in the debt
+  auction.  Traders can also begin bidding with dai to buy the about
+  135 dai worth of collateral in the collateral auction.  Once there
+  is at least 105 dai is being bid, traders bid in reverse to take the
+  least amount of collateral for 105 dai.  The remainder is returned
+  to the CDP owner.

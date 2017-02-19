@@ -1,0 +1,108 @@
+<!doctype html><script src=wiki.js></script>
+
+The MakerSystem is defined by the set of MakerComponents.
+
+The most important MakerComponents are the VatComponent and VowComponent.
+
+The VatComponent contains all the entrypoints to the system, called MakerActions.
+This contract is sometimes called the "CDP Engine".
+
+The VowComponent is a contract that enforces the incentives that keep the MakerVat solvent.
+This contract is sometimes called the "Settler".
+
+The rest of the MakerComponents are used to protect and coordinate calls to the VatComponent.
+For example, the DadComponent is a contract which counts MKR votes to determine when to call `mold`,
+while the RatComponent turns multiple input feeds into a "true" feed value with which to `mark`.
+
+MakerActions can be categorized by which MakerRole can access them.
+Each MakerRole corresponds 1:1 to one of the MakerComponents,
+except LadRole, which simply means "public".
+All MakerActions are identified with 4 letter words.
+
+A MakerVariable is a part of the Maker system state.
+All MakerVariables are identified by 3 letter words.
+Variables are generally classified into Parameters, Feeds, and Automated.
+
+A Gem is a valid ERC20 token.
+An Ilk is a CDP type. An ilk has a fixed gem that is not a parameter, feed, or auto variable.
+An Urn is a CDP.
+
+
+Vat Parameters
+
+* HowVariable (sensitivity parameter)
+
+Vat Feeds
+
+* FixVariable (dai market price)
+
+Vat Automated
+
+* ParVariable (dai target price)
+* WayVariable (dai target rate)
+* SinVariable (bad debt)
+
+Ilk Parameters
+
+* MatVariable (liquidation ratio)
+* HatVariable (debt ceiling)
+* TaxVariable (fee rate)
+* AxeVariable (penalty ratio)
+* LaxVariable (limbo duration
+
+Ilk Feeds
+
+* TagVariable (gem market price)
+* ZzzVariable (tag expiration)
+
+Ilk Automated
+
+* ProVariable (collateral quantity)
+* ConVariable (dai debt)
+* HueVariable (CDP state)
+
+Public Actions (`lad` role)
+
+* OpenAction (create cdp)
+* LockAction (lock collateral)
+* FreeAction (free collateral)
+* DrawAction (borrow dai)
+* WipeAction (cover dai)
+* GiveAction (transfer cdp)
+* DropAction (close cdp / extract refund)
+
+Oracle Actions (`rat` role)
+
+* TellAction (report dai market price)
+* MarkAction (report collateral market price)
+
+Keeper Actions (`cat` role)
+
+* BiteAction (poke risky CDP)
+* KickAction (poke vow)
+
+Admin Actions (`dad` role)
+
+* FormAction (add CDP type)
+* MoldAction (modify CDP parameters
+* FrobAction (modify sensitivity parameter)
+
+Settler Actions (`vow` role)
+
+* HealAction (cover bad debt)
+* GrabAction (start liquidation request)
+* PlopAction (deliver liquidation results)
+* LootAction (process surplus dai)
+
+Undesirable Actions (`nil`)
+
+* SuckAction (create dai backed by bad debt)
+
+Internal Actions (`dao`)
+
+* PullAction (transfer token into vault)
+* PushAction (transfer token out of vault)
+* MintAction (create dai/mkr)
+* BurnAction (destroy dai/mkr)
+
+

@@ -1,0 +1,80 @@
+<!doctype html><script src=wiki.js></script>
+
+A collateralized debt position (CDP) is a DaiCreditSystem record of
+the CdpCollateral posted by the CdpOwner as well as the CdpDebt owed.
+
+Every CDP has a CdpId and belongs to a CdpType.
+
+Borrowing dai is done by "locking" some CollateralTokens in a CDP and
+then "issuing" an amount of dai.  This sends the newly issued dai to
+the DaiBorrower and records a corresponding amount of debt in the CDP.
+
+Over time, the CDP accrues a StabilityFee added on top of the debt.
+The borrower can "free" the posted collateral by "covering" the debt
+plus the stability fee.  All stability fees go towards BuyAndBurn.
+
+Example 1: Borrowing dai
+  Alice wants to borrow 100 dai.  She locks an amount of ETH worth
+  significantly more than 100 dai into a CDP and then issues 100 dai,
+  which are instantly sent to her Ethereum account.  If the stability
+  fee for this CDP type is 0.75% per year, then one year later Alice
+  would need 100.75 dai to cover the debt and retrieve her ETH.
+
+  Background:
+    Given ETH1 is a type of CDP backed by ETH
+      and the stability fee of ETH1 is 0.75%
+      and the price of ETH is 5.34 SDR
+      and the target price of dai is 0.73 SDR
+      and the liquidation ratio of ETH1 is 150%
+      and I am a person called Alice
+      and I open a CDP of type ETH1
+
+  Scenario:
+    Given I have 1,000 ETH and 500 DAI
+     When I lock 25 ETH and issue 100 DAI
+     Then I should have 975 ETH and 600 DAI
+     When I wait 1 year and close the CDP
+     Then I should have 1,000 ETH and 499.25 DAI
+
+  Scenario: Attempting to lock nonexistent collateral
+    Given I have 24 ETH
+     Then I should not be able to lock 25 ETH
+  Scenario: Attempting to borrow against too little collateral
+    Given I have 1,000 ETH
+     When I lock 20 ETH
+     Then I should not be able to issue 100 DAI
+
+The (normally) deflationary nature of the dai means that the market
+value of the debt measured in SDR also tends to increase over time;
+this adds an additional cost to borrowing, beyond the stability fee.
+
+The DaiDeflation transfers value from DaiBorrowers to DaiHolders,
+while the stability fee transfers value from borrowers to MkrOwners.
+
+One of the primary use cases of CDPs is MarginTrading by borrowers.
+
+Example 2: Margin trading
+  Bob wishes to go margin long ETH/DAI.  He locks 150 SDR worth of ETH
+  and issues 100 SDR worth of dai.  He then buys another 100 SDR worth
+  of ETH with the dai he just borrowed.  This puts him at a net 1.66x
+  exposure to ETH/SDR.  Of course, he is free to do whatever he wants
+  with the ETH he obtained by selling his dai, but the collateral (the
+  150 SDR worth of ETH that he locked in the CDP) remains unavailable
+  to him until he covers the debt plus stability fees.
+
+Although CDPs are not fungible with each other, the ownership of a CDP
+is transferable.  This allows CDPs to be used in smart contracts that
+perform more complex methods of borrowing (for example, involving more
+than one actor).
+
+Example 3: Multi-party margin trading
+  Alice and Bob collaborate using an Ethereum contract to issue 100
+  SDR worth of dai backed by ETH.  Alice contributes 50 SDR worth of
+  ETH, while Bob contributes 100 SDR worth.  The OTC contract takes
+  the funds, creates a CDP and then issues 100 SDR worth of dai.
+  The newly borrowed dai are automatically sent to Bob.  (From Bob's
+  point of view, he is buying 100 SDR worth of dai by paying the
+  equivalent value in ETH.)  The contract then transfers ownership of
+  the CDP to Alice.  She now has 100 SDR worth of (dai-denominated)
+  debt and 150 SDR worth of (ETH-denominated) collateral.  Since she
+  started with only 50 SDR worth of ETH, she is now 3x long ETH/SDR.

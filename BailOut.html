@@ -1,0 +1,14 @@
+<!doctype html><script src=wiki.js></script>
+
+A CdpLiquidation is not guaranteed to be profitable, even if triggered
+when the CollateralRatio is just below the LiquidationRatio.
+
+For example, a market crash, or simply market slippage, could cause
+the CollateralAuction to raise less MkrTokens for BuyAndBurn than the
+amount that had to be created by PrintAndSell in the DebtAuction.
+
+In this case, MakerDao sustains a net loss, which means that there is
+a corresponding net increase in the outstanding supply of MKR.
+
+Maker uses multiple RiskParameters to ensure that the system remains
+stable despite the possibility of unprofitable liquidations.

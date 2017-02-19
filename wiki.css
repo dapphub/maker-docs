@@ -1,0 +1,15 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto+Mono");
+html { font: 10pt/1.5 "Roboto Mono", monospace; }
+body { max-width: 45rem; margin: auto; padding: 1rem; }
+body { white-space: pre; }
+h1 { margin: 0; line-height: 3rem; font-size: 1.5rem; }
+a { text-decoration: none; }
+a.broken { color: #c00; }
+a:hover { border-bottom: 1px solid currentcolor; }
+@media (min-width: 1024px) { body { padding: 3rem 1rem; } }
+@media (min-width: 1024px) { html { font-size: 18pt; } }
+h2 { font-size: inherit; border: 1px solid gray; margin: 0; }
+h2 { border-style: solid none; }
+h2 span { float: right; }
+pre b { color: gray; }
+pre { margin: 0; }

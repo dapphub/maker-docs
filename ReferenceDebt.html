@@ -1,0 +1,20 @@
+<!doctype html><script src=wiki.js></script>
+
+The "reference debt" or "fee accumulator" of a CdpType is an imaginary
+loan of 1 dai, taken out at CDP type creation and left to "accumulate"
+the compound StabilityFees applied over the lifetime of the CDP type
+(taking into account that the fee can be changed by SystemGovernance).
+
+The reference debt RD(t_n) is computed from its previous value by
+
+                                                  dt
+         RD(t_n) = RD(t_[n-1]) * [1 + SF(t_[n-1])],
+
+where SF is the stability fee and dt is the elapsed TimeInYears.
+(This computation is nontrivial due to FixedPointExponentiation.)
+
+Previous values may be needed later to determine CdpFees, so each
+computed value of the reference debt is recorded in EthereumStorage.
+
+To maintain the correct value, the reference debt also needs to be
+recomputed whenever the stability fee of the CDP type is changed.

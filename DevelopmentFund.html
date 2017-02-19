@@ -1,0 +1,20 @@
+<!doctype html><script src=wiki.js></script>
+
+The development fund is a SmartContract separate from the core system
+that holds money on behalf of MakerDao.
+
+The fund is temporarily controlled by a group of MkrToken owners who
+actively participate in SystemGovernance (known as the AlphaDynasty).
+
+The MKR in the fund was initially set aside by the founder of Maker to
+facilitate development of the DaiCreditSystem.  The fund may also hold
+other EthereumTokens (usually raised by selling MKR from the fund).
+
+As of January 1, 2017, the address of the MultiSig controlling the
+development fund is 0x7bb0b08587b8a6b8945e09f1baca426558b0f06a.
+
+<div id=logs></div><script>
+getAllLogs("0x7bb0b08587b8a6b8945e09f1baca426558b0f06a").then(logs => {
+  document.querySelector("#logs").innerHTML = JSON.stringify(logs, null, 2)
+})
+</script>

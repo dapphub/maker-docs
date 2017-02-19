@@ -1,0 +1,15 @@
+<!doctype html><script src=wiki.js></script>
+
+Risk parameters are SystemGovernance instruments used to minimize the
+need for BailOuts, and in general to ensure that the DaiCreditSystem
+remains stable despite the possibility of a variety of contingencies.
+
+Each CdpType has five risk parameters:
+
+ * The DebtCeiling, used to limit risk due to PortfolioImbalance.
+ * The LiquidationRatio, used to limit risk due to PriceVolatility.
+ * The LiquidationPenalty, used to offset the costs of CdpLiquidation.
+ * The LimboDuration, used to manage risk due to PriceFeed failures.
+ * The StabilityFee, rewarding MkrToken holders for assuming the risk.
+
+There is also a global risk parameter, known as the SensitivityParameter.

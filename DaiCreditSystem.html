@@ -1,0 +1,18 @@
+<!doctype html><script src=wiki.js></script>
+
+The Dai Credit System is the SmartContract system used by MakerDao to
+generate the PriceStability and PriceDeflation of the DaiStablecoin by
+automatic modification of market incentives (via DeflationAdjustment),
+and to provide trustless credit services to EthereumBlockchain users.
+
+New dai enter the money supply when a DaiBorrower posts an excess of
+collateral to a CollateralizedDebtPosition (CDP) and takes out a loan.
+The debt and collateral amounts are recorded in the CDP, and (as time
+passes) the StabilityFees incurred by the CdpOwner are also recorded.
+The collateral itself is held in a TokenVault controlled by MakerDAO.
+
+Any Ethereum account can borrow dai without any requirements beyond
+posting and maintaining adequate collateral.  There are no term limits
+on dai loans and borrowers are free to open or close CDPs at any time.
+The collateral held in CDPs collectively backs the value of the dai in
+a fully transparent manner that anyone can verify.

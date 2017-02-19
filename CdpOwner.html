@@ -1,0 +1,12 @@
+<!doctype html><script src=wiki.js></script>
+
+Every CollateralizedDebtPosition has an "owner."  While CDPs are not
+fungible with each other, they can still be traded (see CdpTransfer).
+
+The CDP owner is entitled to redeem the CdpCollateral after covering
+all outstanding CdpDebt (including any incurred StabilityFees).
+
+In case of a profitable CdpLiquidation, the LeftoverCollateral from
+the CollateralAuction is automatically sent back to the CDP owner.
+
+The original owner of a CDP is the DaiBorrower.

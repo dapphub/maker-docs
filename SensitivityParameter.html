@@ -1,0 +1,12 @@
+<!doctype html><script src=wiki.js></script>
+
+The "sensitivity parameter," sometimes known as the "target rate adjustment,"
+is the only global RiskParameter of the DaiCreditSystem.
+
+The sensitivity is defined as the number of percentage points per
+day by which to adjust the TargetRate (in the direction determined
+by the relationship between the TargetPrice and the DaiMarketPrice).
+
+For example, if the sensitivity is 0.2 pp/day, and the market
+price of dai is too low, then if the system were poked after 12 hours,
+the dai target rate rate would be increased by 0.1 percentage points.

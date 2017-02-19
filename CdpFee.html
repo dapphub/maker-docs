@@ -1,0 +1,15 @@
+<!doctype html><script src=wiki.js></script>
+
+When a CollateralizedDebtPosition that was last poked at time t_[n-1]
+is poked at time t_n, the new total CdpDebt is given by
+
+                                   RD(t_n)
+             D(t_n) = D(t_[n-1]) -----------,
+                                 RD(t_[n-1])
+
+where RD(t_n) and RD(t_[n-1]) are the corresponding ReferenceDebts.
+This applies all the compound StabilityFees in a single calculation.
+
+The fee F(t_n) = D(t_n) - D(t_[n-1]) is paid by the CdpOwner, and the
+same amount of DaiStablecoin are also created and sent to BuyAndBurn.
+

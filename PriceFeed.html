@@ -1,0 +1,13 @@
+<!doctype html><script src=wiki.js></script>
+
+Other than KeeperAgents, another crucial group of ExternalAgents that
+MakerDao requires to function are price feed oracles.
+
+Oracles are mechanisms that provide information from the outside world
+onto the BlockChain for SmartContracts to consume.
+
+Maker needs information about the DaiMarketPrice (specifically, its
+deviation from the TargetPrice) to perform DeflationAdjustment.
+
+It also needs information about the market prices of the various
+CollateralTokens, to know when a CdpLiquidation can be triggered.

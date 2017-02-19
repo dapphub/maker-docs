@@ -1,0 +1,10 @@
+<!doctype html><script src=wiki.js></script>
+
+The "market price" of the DaiStablecoin is fed to the DaiCreditSystem
+by a set of trusted PriceOracles maintained by SystemGovernance.
+
+The market price of dai is an input parameter to DeflationAdjustment,
+but no other components of the credit system refer directly to the
+market price of dai.  (The TargetPrice is always used instead.)
+
+The market price of dai is denominated in SDR (the StabilityAnchor).
