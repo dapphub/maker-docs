@@ -1,0 +1,62 @@
+<!doctype html><script src=wiki.js></script>
+
+MakerDao   refers collectively to TheVat and TheVow
+TheVat     one half of MakerDao (the other one being TheVow)
+MakerJar   a DSVault contract holding ERC20 tokens on behalf of MakerDao
+MakerIlk   a structure in TheVat representing a CdpType
+MakerUrn   a structure in TheVat representing a CollateralizedDebtPosition
+
+TheDai     the StableCoin operated by MakerDao [SwapAct]
+TheFix     current market price of TheDai [TellAct]
+TheHow     the SensitivityParameter (expressed as a MakerRay)
+ThePar     current TargetPrice of TheDai [PokeAct]
+TheWay     current TargetRate of TheDai [PokeAct]
+TheTau     time of last PokeAct
+
+ThePie     unprocessed StabilityFee revenues [LootAct]
+TheSin     bad debt [HealAct]
+
+TheJar     the MakerJarn of a MakerIlk (holding its CollateralToken)
+TheAxe     the LiquidationRatio of a MakerIlk
+TheHat     the DebtCeiling of a MakerIlk
+TheTax     the StabilityFee of a MakerIlk
+TheLag     the LimboDuration of a MakerIlk
+TheRho     time of last DripAct of a MakerIlk
+TheBag     the RateAccumulator of a MakerIlk
+
+TheTag     the last market price of a MakerGem [MarkAct]
+TheZzz     the expiration date of a MakerGem's market price [MarkAct]
+
+TheCat     the KeeperAgent that liquidated a MakerUrn
+TheLad     the CdpOwner of a MakerUrn
+TheIlk     the MakerIlk of a MakerUrn
+TheCon     the CdpDebt of a MakerUrn
+ThePro     the CdpCollateral of a MakerUrn
+ThePhi     time of last PokeAct of a MakerUrn
+TheHue     the CdpState of a MakerUrn
+
+SwapAct   change TheDai used by TheVat
+TellAct   update TheFix
+FrobAct   change TheHow
+MarkAct   update TheTag and TheZzz of a MakerGem
+
+FormAct   create a new MakerIlk
+
+OpenAct   create a new MakerUrn (OpenCdp)
+GiveAct   transfer ownership of a MakerUrn (TransferCdp)
+ShutAct   perform a WipeAct and a FreeAct and delete the MakerUrn
+LockAct   transfer MakerGem tokens to the MakerJar of a MakerGem
+FreeAct   transfer MakerGem tokens from the MakerJar of a MakerGem
+DrawAct   create new DaiStablecoin tokens using a MakerUrn
+WipeAct   destroy DaiStablecoin tokens using a MakerUrn
+
+PokeAct   update ThePar, TheWay and TheTau
+ProdAct   update TheCon and ThePhi of a MakerUrn
+DripAct   update TheBag and TheRho of a MakerIlk
+
+BiteAct   called by CatKin to trigger CdpLiquidation of a MakerUrn
+GrabAct   called by TheVow to begin CdpLiquidation
+PlopAct   called by TheVow to return CdpLiquidation results
+
+HealAct   process some portion of TheSin
+LootAct   process some portion of ThePie
