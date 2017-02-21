@@ -1,0 +1,67 @@
+<!doctype html><script src=wiki.js></script>
+<script src=viz.js></script>
+
+The "stage" of a MakerUrn determines which UrnActs are possible:
+
+<div style="line-height: 1">
+                      adds risk
+                     ╭┈┈┈┈┈┈┈┈┈╮
+       give lock wipe free draw bite grab plop shut
+      ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+pride ┃  ■    ■    ■    ■    ■                   ■  ┃ overcollateralized
+anger ┃  ■    ■    ■    ■                        ■  ┃ debt ceiling reached
+worry ┃  ■    ■    ■                             ■  ┃ price feed unavailable
+panic ┃  ■    ■    ■              ■              ■  ┃ undercollateralized
+grief ┃  ■                             ■            ┃ liquidation initiated
+dread ┃  ■                                  ■       ┃ liquidation in progress
+shame ┃  ■                                       ■  ┃ liquidation complete
+      ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+       give lock wipe free draw bite grab plop shut
+           ╰┈┈┈┈┈┈┈┈┈╯         ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈╯
+             derisks              liquidates
+</div>
+
+State transition diagram:
+
+<div style="margin-top: -4rem"><script>
+document.write(Viz(`
+  digraph {
+    node [fontname=monospace fontsize=18 shape=circle width=1];
+    edge [fontname=monospace fontsize=18 len=3];
+    rankdir = LR;
+    open [peripheries=2 shape=circle]
+    shut [peripheries=2 shape=circle]
+    open -> pride [style=bold len=2]
+    pride -> anger [style=dashed color=red]
+    anger -> worry [style=dashed color=red]
+    worry -> panic [style=dashed color=red]
+    panic -> worry [style=dashed color=red]
+    worry -> anger [style=dashed color=red]
+    anger -> pride [style=dashed color=red]
+    panic -> grief [style=dashed color=blue fontcolor=blue label=<bite      > len=2]
+    grief -> dread [style=dashed color=blue fontcolor=blue label=<grab> len=2]
+    dread -> shame [style=dashed color=blue fontcolor=blue label=<plop   > len=2]
+    shame -> shut [style=bold len=2]
+    panic -> shut [style=bold len=2]
+    worry -> shut [style=bold len=2]
+    worry -> pride [style=dashed color=red]
+    panic -> anger [style=dashed color=red]
+    anger -> panic [style=dashed color=red]
+    panic -> pride [style=bold]
+    panic -> pride [style=bold]
+    pride -> panic [style=dashed color=red len=2]
+    pride -> shut [style=bold]
+    anger -> shut [style=bold]
+    pride -> worry [style=dashed color=red]
+    pride [style=bold]
+    shame [style=bold]
+    panic [style=bold color=red fontcolor=red]
+    anger [style=dashed color=red fontcolor=red]
+    worry [style=dashed color=red fontcolor=red]
+    grief [style=dashed color=blue fontcolor=blue]
+    dread [style=dashed color=blue fontcolor=blue]
+    open [color=gray fontcolor=gray width=0.8]
+    shut [color=gray fontcolor=gray width=0.8]
+  }
+`, { engine: "neato" }))
+</script></div>
