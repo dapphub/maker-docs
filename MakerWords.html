@@ -1,54 +1,75 @@
 <!doctype html><script src=wiki.js></script>
 
-MakerDao   refers collectively to MakerVat and MakerVow
-MakerVat   one half of MakerDao (the other one being MakerVow)
-MakerJar   a DSVault contract holding ERC20 tokens on behalf of MakerDao
-MakerIlk   a structure in TheVat representing a CdpType
-MakerUrn   a structure in TheVat representing a CollateralizedDebtPosition
+DsAuth          a DappSys authorization MixIn contract
+DsVault         a DappSys contract for holding ERC20 tokens
 
-TheDai     the StableCoin operated by MakerDao [SwapAct]
-TheFix     current market price of TheDai [TellAct]
-TheHow     the SensitivityParameter (expressed as a MakerRay)
-ThePar     current TargetPrice of TheDai [PokeAct]
-TheWay     current TargetRate of TheDai [PokeAct]
-TheTau     time of last PokeAct
+MakerDao        the base class for MakerVat and MakerVow
+MakerVat        the primary MakerDao contract (CDP engine)
+MakerVow        a secondary MakerDao contract (settler/liquidator)
 
-ThePie     unprocessed StabilityFee revenues [LootAct]
-TheSin     bad debt [HealAct]
+EraProperty     either `block.timestamp' or a fake timestamp
+NoteEvent       an anonymous event triggered by the NoteModifier
+NoteModifier    logs `msg.sig', `msg.sender' and `msg.data' on entry
+SureFunction    makes sure something is true (throwing otherwise)
 
-TheJar     the MakerJarn of a MakerIlk (holding its CollateralToken)
-TheAxe     the LiquidationRatio of a MakerIlk
-TheHat     the DebtCeiling of a MakerIlk
-TheTax     the StabilityFee of a MakerIlk
-TheLag     the LimboDuration of a MakerIlk
-TheRho     time of last DripAct of a MakerIlk
-TheBag     the RateAccumulator of a MakerIlk
+MoreFunction    safely adds two RayNumbers or WadNumbers
+LessFunction    safely subtracts one RayNumber or WadNumber from another
+CastFunction    safely downcasts a `uint256' into a `uint128'
 
-TheTag     the last market price of a MakerGem [MarkAct]
-TheZzz     the expiration date of a MakerGem's market price [MarkAct]
+WadNumber       a fixed-point `uint128' with 18 decimals (like ETH)
+WmulFunction    safely multiply two WadNumbers with basic rounding
+WdivFunction    safely divide two WadNumbers with basic rounding
 
-TheCat     the KeeperAgent that liquidated a MakerUrn
-TheLad     the CdpOwner of a MakerUrn
-TheIlk     the MakerIlk of a MakerUrn
-TheCon     the CdpDebt of a MakerUrn
-ThePro     the CdpCollateral of a MakerUrn
-ThePhi     time of last PokeAct of a MakerUrn
-TheHue     the CdpState of a MakerUrn
+RayNumber       a fixed-point `uint128' with 36 decimals (for rates)
+RmulFunction    safely multiply two RayNumbers with basic rounding
+RdivFunction    safely divide two RayNumbers with basic rounding
+RpowFunction    raise a RayNumber to a natural number exponent
 
-SwapAct   change TheDai used by TheVat
-TellAct   update TheFix
-FrobAct   change TheHow
-MarkAct   update TheTag and TheZzz of a MakerGem
+MakerJar        a MakerVat representation of a CollateralToken
+MakerIlk        a MakerVat representation of a CdpType
+MakerUrn        a MakerVat representation of a CollateralizedDebtPosition
 
-FormAct   create a new MakerIlk
+MakerDai        the StableCoin operated by MakerDao
+FixParameter    the current market price of MakerDai            [TellAct]
+TellAct   	update the FixParameter
+HowParameter    the SensitivityParameter (RayNumber)            [FrobAct]
+FrobAct   	change the HowParameter
+MakerTau        the time of the last ProdAct                    [ProdAct]
+MakerWay        the current TargetRate of MakerDai              [ProdAct]
+MakerPar        the current TargetPrice of MakerDai             [ProdAct]
 
-OpenAct   create a new MakerUrn (OpenCdp)
-GiveAct   transfer ownership of a MakerUrn (TransferCdp)
-ShutAct   perform a WipeAct and a FreeAct and delete the MakerUrn
-LockAct   transfer MakerGem tokens to the MakerJar of a MakerGem
-FreeAct   transfer MakerGem tokens from the MakerJar of a MakerGem
-DrawAct   create new DaiStablecoin tokens using a MakerUrn
-WipeAct   destroy DaiStablecoin tokens using a MakerUrn
+VatPie          the unprocessed revenue from StabilityFees      [LootAct]
+VatSin          the bad debt from liquidated CDPs               [HealAct]
+
+MarkAct   	update the JarTag and JarZzz of a MakerJar
+JarTag          the last market price of a MakerJar             [MarkAct]
+JarZzz          the expiration date of a JarTag                 [MarkAct]
+
+FormAct         create a new MakerIlk
+
+IlkJar          the MakerJar of a MakerIlk
+IlkAxe          the LiquidationRatio of a MakerIlk
+IlkHat          the DebtCeiling of a MakerIlk
+IlkTax          the StabilityFee of a MakerIlk
+IlkLag          the LimboDuration of a MakerIlk
+IlkRho          time of last DripAct of a MakerIlk
+IlkBag          the RateAccumulator of a MakerIlk
+
+UrnIlk     	the MakerIlk of a MakerUrn
+UrnStage   	the CdpState of a MakerUrn
+UrnLad     	the CdpOwner of a MakerUrn
+UrnCon     	the CdpDebt of a MakerUrn
+UrnPro     	the CdpCollateral of a MakerUrn
+UrnPhi     	time of last PokeAct of a MakerUrn
+UrnCat     	the KeeperAgent that liquidated a MakerUrn
+
+OpenAct         create a new MakerUrn (OpenCdp)
+GiveAct         transfer ownership of a MakerUrn (TransferCdp)
+LockAct         deposit GemTokens in a MakerUrn
+FreeAct         withdraw GemTokens from a MakerUrn
+DrawAct         create new MakerDai tokens using a MakerUrn
+WipeAct         destroy MakerDai tokens using a MakerUrn
+ShutAct         perform a WipeAct and a FreeAct and delete the MakerUrn
 
 PokeAct   update ThePar, TheWay and TheTau
 ProdAct   update TheCon and ThePhi of a MakerUrn

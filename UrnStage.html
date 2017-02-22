@@ -2,66 +2,75 @@
 <script src=viz.js></script>
 
 The "stage" of a MakerUrn determines which UrnActs are possible:
-
-<div style="line-height: 1">
-                      adds risk
-                     ╭┈┈┈┈┈┈┈┈┈╮
-       give lock wipe free draw bite grab plop shut
-      ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-pride ┃  ■    ■    ■    ■    ■                   ■  ┃ overcollateralized
-anger ┃  ■    ■    ■    ■                        ■  ┃ debt ceiling reached
-worry ┃  ■    ■    ■                             ■  ┃ price feed unavailable
-panic ┃  ■    ■    ■              ■              ■  ┃ undercollateralized
-grief ┃  ■                             ■            ┃ liquidation initiated
-dread ┃  ■                                  ■       ┃ liquidation in progress
-shame ┃  ■                                       ■  ┃ liquidation complete
-      ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-       give lock wipe free draw bite grab plop shut
-           ╰┈┈┈┈┈┈┈┈┈╯         ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈╯
-             derisks              liquidates
+<span style="color: gray">
+   risk unchanged         risk increasing
+       ╭┈┈┈┈╮              ╭┈┈┈┈┈┈┈┈┈╮</span>
+        give shut lock wipe free draw bite grab plop
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<b>pride</b>    ■    ■    ■    ■    ■    ■                    overcollateralized
+<b>anger</b>    ■    ■    ■    ■    ■                         debt ceiling reached
+<b>worry</b>    ■    ■    ■    ■                              price feed unavailable
+<b>panic</b>    ■    ■    ■    ■              ■               undercollateralized
+<b>grief</b>    ■                                  ■          liquidation initiated
+<b>dread</b>    ■                                       ■     liquidation in progress
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        give shut lock wipe free draw bite grab plop<span style="color: gray">
+            ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈╯         ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈╯
+             risk decreasing          risk unwinding</span>
 </div>
 
-State transition diagram:
+<b>State transition diagram:</b>
 
-<div style="margin-top: -4rem"><script>
+<div style="margin: -6rem 0"><script>
 document.write(Viz(`
   digraph {
     node [fontname=monospace fontsize=18 shape=circle width=1];
-    edge [fontname=monospace fontsize=18 len=3];
+    edge [fontname=monospace fontsize=18 len=2];
     rankdir = LR;
+    ranksep = 1;
     open [peripheries=2 shape=circle]
     shut [peripheries=2 shape=circle]
-    open -> pride [style=bold len=2]
+    open -> pride [label=open style=bold]
     pride -> anger [style=dashed color=red]
     anger -> worry [style=dashed color=red]
     worry -> panic [style=dashed color=red]
     panic -> worry [style=dashed color=red]
     worry -> anger [style=dashed color=red]
     anger -> pride [style=dashed color=red]
-    panic -> grief [style=dashed color=blue fontcolor=blue label=<bite      > len=2]
-    grief -> dread [style=dashed color=blue fontcolor=blue label=<grab> len=2]
-    dread -> shame [style=dashed color=blue fontcolor=blue label=<plop   > len=2]
-    shame -> shut [style=bold len=2]
-    panic -> shut [style=bold len=2]
-    worry -> shut [style=bold len=2]
+    panic -> grief [style=dashed color=blue fontcolor=blue label=<bite      >]
+    grief -> dread [style=dashed color=blue fontcolor=blue label=<grab>]
+    dread -> pride [style=dashed color=blue fontcolor=blue label=<plop   >]
+    panic -> shut [label=shut style=bold]
+    worry -> shut [label=shut style=bold]
     worry -> pride [style=dashed color=red]
     panic -> anger [style=dashed color=red]
     anger -> panic [style=dashed color=red]
-    panic -> pride [style=bold]
-    panic -> pride [style=bold]
-    pride -> panic [style=dashed color=red len=2]
-    pride -> shut [style=bold]
-    anger -> shut [style=bold]
+    panic -> pride [label=lock style=bold]
+    panic -> pride [label=wipe style=bold]
+    pride -> panic [label="draw*" style=bold color=red fontcolor=red]
+    pride -> panic [label="free*" style=bold color=red fontcolor=red]
+    pride -> shut [label=shut style=bold]
+    anger -> shut [label=shut style=bold]
     pride -> worry [style=dashed color=red]
     pride [style=bold]
-    shame [style=bold]
     panic [style=bold color=red fontcolor=red]
     anger [style=dashed color=red fontcolor=red]
     worry [style=dashed color=red fontcolor=red]
     grief [style=dashed color=blue fontcolor=blue]
     dread [style=dashed color=blue fontcolor=blue]
-    open [color=gray fontcolor=gray width=0.8]
-    shut [color=gray fontcolor=gray width=0.8]
+    open [label="" width=0.5]
+    shut [label="" width=0.5]
   }
-`, { engine: "neato" }))
+`))
 </script></div>
+<div align=right style="color: gray; font-size: 80%"><span style="display: inline-block; margin: -5rem -1.3rem; position: relative; top: .8rem"><script>document.write(Viz(`digraph { rankdir=LR; node [shape=plaintext width=0 height=0] <> -> < > [style=dashed color=gray] }`))</script></span> out of lad&rsquo;s control     * indirect causation</div>
+<b>Liquidation example:</b>
+
+<b>PRIDE</b> poke =>  <b>PANIC</b> bite =>  <b>GRIEF</b> grab =>  <b>DREAD</b> plop =>  <b>PRIDE</b>
+                                                              
+pro = 100      pro = 100      pro = 100      pro = 100      pro = 24.19
+con = 994      con = 1001     con = 1050     con = 1050     con = 0
+                                                              
+CDP starts     stability      liquidation    CDP remains    liquidation
+out in safe    fees make      penalty adds   locked while   completion
+state          CDP risky      debt to CDP    liquidating    unlocks CDP
