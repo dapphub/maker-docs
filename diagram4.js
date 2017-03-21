@@ -52,10 +52,10 @@ document.write(`<div style="float: left; margin-left: 2rem">${Viz(`
     label     = <<b>Settlement</b>    >;
     fontname  = "sans-serif";
     fontsize  = 16;
-    overlap = false;
-    ratio = 0.7;
+    overlap   = false;
+    ratio     = 0.7;
 
-    edge [len=1.75]
+    edge [len=1.5]
 
     <urn> [label=urn shape=invtrapezium]
     <vat> [shape=square style=bold]
@@ -68,24 +68,30 @@ document.write(`<div style="float: left; margin-left: 2rem">${Viz(`
       <flapper> [shape=square style=bold]
     }
 
-    <dai> [label=DAI shape=septagon height=0.7]
-    <sin> [label=SIN shape=septagon height=0.7]
+    subgraph cluster_dai {
+      style = invis;
+      <dai> [label=DAI shape=septagon height=0.7]
+      <sin> [label=SIN shape=septagon height=0.7]
+    }
+
     <mkr> [label=MKR shape=septagon height=0.7]
 
     <market2> [shape=tripleoctagon label=bog height=0.7]
 
     <dai> -> <jug> [style=bold color=hotpink label=mint]
-    <sin> -> <jug> [style=bold color=hotpink label=mint]
+    <sin> -> <jug> [style=bold color=red label=mint]
     <jug> -> <dai> [style=bold color=hotpink label=burn]
-    <jug> -> <sin> [style=bold color=hotpink label=burn]
+    <jug> -> <sin> [style=bold color=red label=burn]
     <mkr> -> <vow> [style=bold color=teal label=mint]
     <vow> -> <mkr> [style=bold color=teal label=burn]
+    <vow> -> <dai> [style=bold color=hotpink label=burn]
+    <vow> -> <sin> [style=bold color=red label=burn]
 
-    <vat> -> <jug> [style=bold color="hotpink:red" label=mend]
-    <jug> -> <vat> [style=bold color="hotpink:red" label=lend]
+    <vat> -> <jug> [style=bold color="hotpink:invis:red" label=mend]
+    <jug> -> <vat> [style=bold color="hotpink:invis:red" label=lend]
 
-    <urn> -> <vat> [style=bold color="blue:red" label=bite]
-    <vat> -> <vow> [style=bold color="blue:red" label=grab]
+    <urn> -> <vat> [style=bold color="blue:invis:red" label=bite]
+    <vat> -> <vow> [style=bold color="blue:invis:red" label=grab]
     <vat> -> <vow> [style=bold color=hotpink label=loot]
     <vow> -> <vat> [style=bold color=blue label=plop]
 
@@ -96,7 +102,7 @@ document.write(`<div style="float: left; margin-left: 2rem">${Viz(`
     <market2> -> <flipper> [style=bold color=hotpink]
 
     <vow> -> <flopper> [style=bold color=red label=flop]
-    <flopper> -> <vow> [style=bold color="hotpink:red" label=tidy]
+    <flopper> -> <vow> [style=bold color="hotpink:invis:red" label=tidy]
     <vow> -> <flopper> [style=bold color=teal label=bust]
     <flopper> -> <market2> [style=bold color=teal]
     <market2> -> <flopper> [style=bold color=hotpink]
