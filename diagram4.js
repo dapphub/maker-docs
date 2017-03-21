@@ -52,7 +52,6 @@ document.write(`<div style="float: left; margin-left: 2rem">${Viz(`
     label     = <<b>Settlement</b>    >;
     fontname  = "sans-serif";
     fontsize  = 16;
-    overlap   = false;
     ratio     = 0.7;
 
     edge [len=1.5]
@@ -63,9 +62,9 @@ document.write(`<div style="float: left; margin-left: 2rem">${Viz(`
 
     subgraph cluster_flipflaps {
       style = invis;
-      <flipper> [shape=square style=bold]
-      <flopper> [shape=square style=bold]
-      <flapper> [shape=square style=bold]
+      <flipper> [shape=square style=bold height=0.8]
+      <flopper> [shape=square style=bold height=0.8]
+      <flapper> [shape=square style=bold height=0.8]
     }
 
     subgraph cluster_dai {
@@ -80,12 +79,12 @@ document.write(`<div style="float: left; margin-left: 2rem">${Viz(`
 
     <dai> -> <jug> [style=bold color=hotpink label=mint]
     <sin> -> <jug> [style=bold color=red label=mint]
-    <jug> -> <dai> [style=bold color=hotpink label=burn]
-    <jug> -> <sin> [style=bold color=red label=burn]
+
+    {<vow>, <jug>} -> <dai> [style=bold color=hotpink label=burn]
+    {<vow>, <jug>} -> <sin> [style=bold color=red label=burn]
+
     <mkr> -> <vow> [style=bold color=teal label=mint]
     <vow> -> <mkr> [style=bold color=teal label=burn]
-    <vow> -> <dai> [style=bold color=hotpink label=burn]
-    <vow> -> <sin> [style=bold color=red label=burn]
 
     <vat> -> <jug> [style=bold color="hotpink:invis:red" label=mend]
     <jug> -> <vat> [style=bold color="hotpink:invis:red" label=lend]
