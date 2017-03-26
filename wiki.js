@@ -31,10 +31,14 @@ var wikify = html => html
 .replace(/(^\n+)|(\n+$)/g, "")
 .replace(/([A-Z]?[a-z]+)([A-Z][a-z]+)+/g, getLink)
 .replace(/0x[0-9a-f]{40}/g, getAddressLink)
+.replace(/https?:\/\/[^\s>]+/g, getExternalLink)
 .replace(/(Example \d+|Background|Scenario):(?: (.*))?/g, "<b>$1:</b> <u>$2</u>")
 
 var getAddressLink = address =>
 `<a href=https://etherscan.io/address/${address}>${address}</a>`
+
+var getExternalLink = address =>
+`<a href=${address}>${address}</a>`
 
 var getLink = name => {
   var filename = name.replace(/^[a-z]/, x => x.toUpperCase())
